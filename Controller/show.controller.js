@@ -42,39 +42,49 @@ const getShow = async (req, res) => {
 
 // BOOKING SEATS FOR A SHOW (ONLY USER CAN BOOK SEATS)
 
-
 const bookSeats = async (req, res) => {
     try {
         const { seats } = req.body;
         const showId = req.params.showId;
-        const userId = req.user?.userId; // Extract user ID from JWT
+        const userId = req.user?.userId; 
 
         console.log("Booking Request:", { showId, seats, userId });
 
+        // Ensure seats is an array
+        if (!req.body.seats || !Array.isArray(req.body.seats) || req.body.seats.length === 0) {
+            console.log("Invalid seats received:", req.body.seats);
+            return res.status(400).json({ message: "Invalid seat selection. Seats should be a non-empty array." });
+        }
+        
 
-        // Check if the show exists
+        // Fetch the show
         const show = await Show.findById(showId);
         if (!show) {
             return res.status(404).json({ message: "Show not found" });
         }
 
-        console.log("Existing Booked Seats:", show.bookedSeats);
+        // Ensure BookedSeats is an array
+        if (!Array.isArray(show.BookedSeats)) {
+            show.BookedSeats = [];
+        }
 
-        // Check if requested seats are available
-        const isAvailable = seats.every(seat => !show.bookedSeats.includes(seat));
+        console.log("Existing Booked Seats:", show.BookedSeats);
+
+        // Check seat availability
+        const isAvailable = seats.every(seat => !show.BookedSeats.includes(seat));
         if (!isAvailable) { 
             return res.status(400).json({ message: "Some seats are already booked" });
         }
 
         // Update booked seats
-        show.bookedSeats.push(...seats);
+        show.BookedSeats.push(...seats);
         await show.save();
 
         // Create a new booking
-        const booking = new Booking({
+        const booking = new Booking({ 
             userId,
             showId,
-            seats,  // Use lowercase 'seats'
+            seats, 
             paymentStatus: "Completed",
         });
 

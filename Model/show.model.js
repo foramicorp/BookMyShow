@@ -1,19 +1,20 @@
 const mongoose = require("mongoose");
 
 const showSchema = new mongoose.Schema({
-
-    Movie_Id : {
+    Movie_Id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Movie"
     },
-    MovieName : String,
-    Date : String ,
-    Time : String,
-    TotalSeats : Number,
-    BookedSeats : Number,
-    
-})
+    MovieName: String,
+    Date: String,
+    Time: String,
+    TotalSeats: Number,
+    BookedSeats: { 
+        type: [Number],  
+        default: [] 
+    }
+});
 
-const Show = mongoose.model("Show",showSchema);
+const Show = mongoose.model("Show", showSchema);
 
 module.exports = Show;

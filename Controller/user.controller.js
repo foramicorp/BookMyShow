@@ -90,7 +90,7 @@ const loginUser = async (req,res) => {
             Phone_Number : isExists.Phone_Number,
             Email : isExists.Email,
         }
-        const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn : '1h'});
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn : '5h'});
 
         console.log(payload);
         console.log("Token generated : ", token);
